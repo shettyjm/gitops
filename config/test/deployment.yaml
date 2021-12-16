@@ -1,1 +1,25 @@
-test k8s deployment
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: appdev-cicd-demo-deployment
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: appdev-cicd-demo-deployment
+  template:
+    metadata:
+     
+      labels:
+        app: appdev-cicd-demo-deployment
+    spec:
+      containers:
+        - name: appdev-cicd-demo-deployment
+          image: 'quay.io/jmaira/demos:latest'
+          ports:
+            - name: 8081-tcp
+              containerPort: 8081
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: camel-cicd-demo-cm
