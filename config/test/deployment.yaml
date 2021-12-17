@@ -13,8 +13,8 @@ spec:
       labels:
         app: appdev-cicd-demo-deployment
       annotations:
-        revision: "f84bdc1545abd41944381bc9bf82e3adad3a52e1"
-        buildDate: "20211217073731"
+        revision: "a403adba56fc019bce8f231e8e27a4e08921257f"
+        buildDate: "20211217185143"
     spec:
       containers:
         - name: appdev-cicd-demo-deployment
