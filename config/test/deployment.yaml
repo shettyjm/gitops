@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: appdev-cicd-demo-deployment
-          image: "quay.io/jmaira/demos:latest"
+          image: image-registry.openshift-image-registry.svc:5000/pipelines-tutorial/rtdemo
           ports:
             - name: 8081-tcp
               containerPort: 8081
