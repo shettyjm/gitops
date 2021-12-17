@@ -19,6 +19,8 @@ spec:
       containers:
         - name: appdev-cicd-demo-deployment
           image: quay.io/jmaira/demos:cameldemo12222
+          imagePullSecrets:
+            - name: regcred
           ports:
             - name: 8081-tcp
               containerPort: 8081
