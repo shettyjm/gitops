@@ -1,0 +1,158 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: slack-post-script-cm
+  
+data:
+  script.sh: >
+    #!/usr/bin/env sh
+
+
+    MESSAGE=$(echo "${MESSAGE}" | sed -e 's/\"/\\\\"/g')
+
+
+    BOTNAME=$(echo "${BOTNAME}" | sed -e 's/\"/\\\\"/g')
+
+
+    JSON="{\"text\": \"${MESSAGE}\", \"username\": \"${BOTNAME}\",
+    \"icon_emoji\": \"${EMOJI}\"}"
+
+    buildid="${BLDID}" 
+
+
+    a="${STATE}" 
+        
+    if [ $a == 'START' ]
+      then
+          #If they are equal then print this
+          itcommitlink="https://github.com/shettyjm/gitops/commit/${BLDID}"
+          message1="Build # ${buildid} Started Successfully :smile:"
+      else
+          #else print this
+          message1="Build # ${buildid}  Completed Successfully :clap:"
+    fi
+
+
+    NOW=$(date +"%c")
+
+
+    echo "${BLDID}" $buildid
+
+    gitcommitlink="https://github.com/shettyjm/gitops/commit/${BLDID}"
+
+    json2="{
+      \"blocks\": [
+        {
+          \"type\": \"header\",
+          \"text\": {
+            \"type\": \"plain_text\",
+            \"text\": \" ${message1} \",
+            \"emoji\": true
+          }
+        },
+        {
+          \"type\": \"section\",
+          \"fields\": [
+            {
+              \"type\": \"mrkdwn\",
+              \"text\": \"*JIRA #:*\nRACS-12345\"
+            },
+            {
+              \"type\": \"mrkdwn\",
+              \"text\": \"*Triggered by:*\n<example.com|John Doe>\"
+            }
+          ]
+        },
+        {
+          \"type\": \"section\",
+          \"fields\": [
+            {
+              \"type\": \"mrkdwn\",
+              \"text\": \"*When:*\n ${NOW}\"
+            }
+          ]
+        },
+        {
+          \"type\": \"header\",
+          \"text\": {
+            \"type\": \"plain_text\",
+            \"text\": \"Pramote to Stage Env using ArgoCD\",
+            \"emoji\": true
+          }
+        },
+        {
+          \"type\": \"actions\",
+          \"elements\": [
+            {
+              \"type\": \"button\",
+              \"text\": {
+                \"type\": \"plain_text\",
+                \"emoji\": true,
+                \"text\": \"Approve\"
+              },
+              \"style\": \"primary\",
+              \"value\": \"click_me_123\"
+            },
+            {
+              \"type\": \"button\",
+              \"text\": {
+                \"type\": \"plain_text\",
+                \"emoji\": true,
+                \"text\": \"Reject\"
+              },
+              \"style\": \"danger\",
+              \"value\": \"click_me_123\"
+            }
+          ]
+        }
+      ]
+    }"
+
+    json1="{
+      \"blocks\": [
+        {
+          \"type\": \"header\",
+          \"text\": {
+            \"type\": \"plain_text\",
+            \"text\": \" ${message1} \",
+            \"emoji\": true
+          }
+        },
+        {
+          \"type\": \"section\",
+          \"fields\": [
+            {
+              \"type\": \"mrkdwn\",
+              \"text\": \"*JIRA #:*\nRACS-12345\"
+            },
+            {
+              \"type\": \"mrkdwn\",
+              \"text\": \"*Triggered by:*\n<example.com|John Doe>\"
+            }
+          ]
+        },
+        {
+          \"type\": \"section\",
+          \"fields\": [
+            {
+              \"type\": \"mrkdwn\",
+              \"text\": \"*When:*\n ${NOW}\"
+            }
+          ]
+        }
+        
+      ]
+    }"
+
+
+        
+      if [ $a == 'START' ]
+      then
+          #If they are equal then print this
+          json=$json1
+      else
+          #else print this
+          json=$json2
+      fi
+
+    curl -X POST -H 'Content-Type: application/json' --data "${json}" "${URL}"
