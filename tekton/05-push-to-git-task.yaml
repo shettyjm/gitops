@@ -1,0 +1,84 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  
+  name: push-to-gitops-repo
+  namespace: pipelines-tutorial
+  
+spec:
+  params:
+    - name: url-gitops
+      type: string
+    - name: image-url
+      type: string
+    - default: gitops
+      name: reponame
+      type: string
+    - default: gitops/config/test
+      description: deployments-dir
+      name: deployments-dir
+      type: string
+    - default: deployment.yaml
+      description: Deployment file
+      name: deployment-file
+      type: string
+    - description: commit
+      name: commit
+      type: string
+    - default: xxxxxxx
+      description: git username email
+      name: git-user-email
+      type: string
+    - default: xxxxxxx
+      description: git username
+      name: git-username
+      type: string
+    - default: xxxxxxxxxxxx
+      description: git passowrd
+      name: git-passowrd
+      type: string
+  steps:
+    - image: 'alpine/git:v2.26.2'
+      name: push-changes-gitops
+      resources: {}
+      script: >
+        #!/bin/sh
+
+        set -e
+
+        git config --global user.email $(params.git-user-email)
+
+        git config --global user.name  $(params.git-username)
+
+        repourl="https://$(params.git-username):$(params.git-passowrd)@github.com/shettyjm/gitops.git"
+
+        echo 'giturl constructed' $repourl 
+
+        git clone -b main $repourl
+
+        ls -ltra 
+
+        cd $(params.deployments-dir)
+
+        buildDate=$(date '+%Y%m%d%H%M%S')
+
+        sed -i "s#revision: \"[a-zA-Z0-9]\\+\"#revision: \"$(params.commit)\"#"
+        $(params.deployment-file)
+
+        sed -i "s#buildDate: \"[0-9]\\+\"#buildDate: \"$buildDate\"#"
+        $(params.deployment-file)
+
+        sed -i "s#image: \"[a-zA-Z0-9:\/]\\+\"#image: \"$(params.image-url)\"#"
+        $(params.deployment-file)
+
+
+        cat $(params.deployment-file)
+
+        git add -u
+
+        git commit -m "[tekton] updating deployment for trigger event
+        $(params.commit)"
+
+        git push
+
+        echo "deploymnet manifest ready for $(params.commit)" 
