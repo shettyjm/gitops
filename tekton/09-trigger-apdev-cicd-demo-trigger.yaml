@@ -1,0 +1,28 @@
+
+
+API Version:  triggers.tekton.dev/v1alpha1
+Kind:         Trigger
+Metadata:
+ Name:         apdev-cicd-demo-trigger 
+ Namespace:    pipelines-tutorial
+  
+Spec:
+  Bindings:
+    Kind:  TriggerBinding
+    Ref:   appdev-cicd-demo-app
+  Interceptors:
+    Params:
+      Name:  secretRef
+      Value:
+        Secret Key:   secretToken
+        Secret Name:  github-secret
+      Name:           eventTypes
+      Value:
+        push
+    Ref:
+      Kind:              ClusterInterceptor
+      Name:              github
+  Service Account Name:  pipeline
+  Template:
+    Ref:  appdev-cicd-demo-app
+
