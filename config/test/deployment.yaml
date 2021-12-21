@@ -14,7 +14,7 @@ spec:
         app: appdev-cicd-demo-deployment
       annotations:
         revision: "d484d86f137ae9bf3a7468b51b785213e3c7d6f1"
-        buildDate: "20211221210103"
+        buildDate: "20211221210104"
     spec:
       containers:
         - name: appdev-cicd-demo-deployment
